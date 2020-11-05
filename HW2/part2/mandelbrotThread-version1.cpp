@@ -39,6 +39,8 @@ void workerThreadStart(WorkerArgs *const args)
 
     int partition = args->height / args->numThreads;
     int startRow = partition * (args->threadId), totalRows;
+    double startTime, endTime, duration;
+    startTime = CycleTimer::currentSeconds();
 
     if (args->threadId == args->numThreads - 1) totalRows = args->height - startRow;
     else totalRows = partition;
@@ -49,6 +51,10 @@ void workerThreadStart(WorkerArgs *const args)
         startRow, totalRows,
         args->maxIterations,
         args->output);
+
+    endTime = CycleTimer::currentSeconds();
+    duration = endTime - startTime;
+    printf("thread %d uses time %lf \n", args->threadId, duration);
 
 }
 
