@@ -37,21 +37,45 @@ void workerThreadStart(WorkerArgs *const args)
 
     //printf("Hello world from thread %d\n", args->threadId);
 
+    ////////////////* version 1 */////////////
+    int partition = args->height / args->numThreads;
+    int startRow = partition * (args->threadId), totalRows;
     double startTime, endTime, duration;
-    int tatalRows = 1;
     startTime = CycleTimer::currentSeconds();
-    for (int nowRunningRow = args->threadId ; nowRunningRow < args->height ; nowRunningRow += args->numThreads){
-        mandelbrotSerial(
-            args->x0, args->y0, args->x1, args->y1,
-            args->width, args->height,
-            nowRunningRow, totalRows,
-            args->maxIterations,
-            args->output);
-    }
+
+    if (args->threadId == args->numThreads - 1) totalRows = args->height - startRow;
+    else totalRows = partition;
+
+    mandelbrotSerial(
+        args->x0, args->y0, args->x1, args->y1,
+        args->width, args->height,
+        startRow, totalRows,
+        args->maxIterations,
+        args->output);
 
     endTime = CycleTimer::currentSeconds();
     duration = endTime - startTime;
     printf("thread %d uses time %lf \n", args->threadId, duration);
+
+
+    ////////////////* version 2 */////////////
+    // double startTime, endTime, duration;
+    // int totalRows = 1;
+    // startTime = CycleTimer::currentSeconds();
+    // for (int nowRunningRow = args->threadId ; nowRunningRow < args->height ; nowRunningRow += args->numThreads){
+    //     mandelbrotSerial(
+    //         args->x0, args->y0, args->x1, args->y1,
+    //         args->width, args->height,
+    //         nowRunningRow, totalRows,
+    //         args->maxIterations,
+    //         args->output);
+    // }
+
+    // endTime = CycleTimer::currentSeconds();
+    // duration = endTime - startTime;
+    // printf("thread %d uses time %lf \n", args->threadId, duration);
+
+
 }
 
 //
